@@ -10,7 +10,7 @@
 
 use XURL, String, Encode, System, Assert;
 
-var token = "xoxp-42641315095-42641899735-42593030083-32d3299e0e";
+var token = "<< INSERT AUTHENTICATION TOKEN HERE >>";
 var apiUrl = "https://slack.com/api/";
 
 function getChannels() {
