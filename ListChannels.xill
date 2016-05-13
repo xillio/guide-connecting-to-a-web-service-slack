@@ -1,0 +1,24 @@
+/**
+ * This script is will output information about all public slack channels.
+ *
+ * This is part of the 'Connecting to a Web API (slack)' guide on http://xill.io
+ *
+ * @author Thomas Biesaart
+ *
+ */
+
+use System, Collection;
+include API;
+
+foreach(channel in getChannels()) {
+    var info = getChannelInfo(channel.id);
+    
+    System.print("====== " :: info.name :: " =====");
+    System.print(info.topic.value);
+    
+    System.print("Number of members: " :: Collection.length(info.members));
+    
+    if(info.is_member) {
+        System.print("You are a member of this channel");
+    }
+}

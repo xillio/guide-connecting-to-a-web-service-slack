@@ -1,0 +1,36 @@
+/**
+ * This script will send a message to the 'general' channel saying you
+ * completed the online guide.
+ *
+ * This is part of the 'Connecting to a Web API (slack)' guide on http://xill.io
+ *
+ * @author Thomas Biesaart
+ *
+ */
+
+use Assert;
+include API;
+
+sendMessageToChannel(
+    "general", 
+    "Hello World,\n" ::
+    "This is a message from the guide at " :: 
+    "http://xill.io/projects/connecting-to-a-web-api-slack/.\n" ::
+    "It looks like I have successfully completed the guide!"
+);
+
+function sendMessageToChannel(channelName, message) {
+    var channel = getChannelIdByName(channelName);
+    sendMessage(channel, message);
+}
+
+private function getChannelIdByName(name) {
+    var channels = getChannels();
+    foreach(channel in channels) {
+        if(channel.name == name) {
+            return channel.id;
+        }
+    }
+    
+    Assert.error("No channel with name `" :: name :: "` was found");
+}

@@ -1,0 +1,85 @@
+/**
+ * This script is responsible for performing all operations related to
+ * the slack web API.
+ *
+ * This is part of the 'Connecting to a Web API (slack)' guide on http://xill.io
+ *
+ * @author Thomas Biesaart
+ *
+ */
+
+use XURL, String, Encode, System, Assert;
+
+var token = "xoxp-42641315095-42641899735-42593030083-32d3299e0e";
+var apiUrl = "https://slack.com/api/";
+
+function getChannels() {
+    return get("channels.list", {}).channels;
+}
+
+function getChannelInfo(channelId) {
+    return get("channels.info", {"channel": channelId}).channel;
+}
+
+function sendMessage(channelId, message) {
+    return get(
+        "chat.postMessage", 
+        {
+            "channel": channelId, 
+            "text": message
+        }
+    );
+}
+
+private function get(method, parameters) {
+    var result = XURL.get(apiUrl :: method :: "?" :: parseParameters(parameters));
+    
+    // Response must be 200 - OK
+    Assert.equal(
+        result.status.code, 
+        200, 
+        "The request failed and resulted in response code " :: result.status.code
+    );
+    
+    // Check if there is an error
+    if(result.body.error != null) {
+        Assert.error("API Error: " :: result.body.error);
+    }
+    
+    // Check if there is a warning
+    if(result.body.warning != null) {
+        System.print("API Warning: " :: result.body.warning, "warn");
+    }
+    
+    return result.body;
+}
+
+private function parseParameters(parameters) {
+    var parsed = ["token=" :: token];
+    
+    foreach(key, value in parameters) {
+        parsed[] = key :: "=" :: Encode.toPercent(value);
+    }
+    
+    return String.join(parsed, "&");
+}
+
+private function runTests() {
+    do {
+        get("api.test", {});
+    } fail(e) {
+        Assert.error("API: FAIL - " :: e.message);
+    } success {
+        System.print("API: OK!");
+    }
+    
+    do {
+        var authTest = get("auth.test", {});
+        System.print("Logged in to `" :: authTest.team :: "` as " :: authTest.user);
+    } fail(e) {
+        Assert.error("Auth: FAIL - " :: e.message);
+    } success {
+        System.print("Auth: OK!");
+    }
+}
+runTests();
